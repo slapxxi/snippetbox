@@ -27,9 +27,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	files := []string{
-		"/Users/slava/Projects/snippetbox/ui/html/index.html",
-		"/Users/slava/Projects/snippetbox/ui/html/partials/nav.html",
-		"/Users/slava/Projects/snippetbox/ui/html/pages/home.html",
+		"./ui/html/index.html",
+		"./ui/html/partials/nav.html",
+		"./ui/html/pages/home.html",
 	}
 
 	ts, err := template.ParseFiles(files...)

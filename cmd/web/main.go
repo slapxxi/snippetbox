@@ -26,7 +26,7 @@ type application struct {
 func main() {
 	var cfg config
 	flag.StringVar(&cfg.addr, "addr", ":4000", "HTTP network address")
-	flag.StringVar(&cfg.dsn, "dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
+	flag.StringVar(&cfg.dsn, "dsn", "web:passworD1234$@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "HTTP network address")
 	flag.Parse()
 
