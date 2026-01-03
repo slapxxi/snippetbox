@@ -1,0 +1,66 @@
+{{define "title"}}Create New Snippet{{end}} {{define "main"}}
+<form action="/snippets/new" method="POST">
+  <div>
+    <label>Title</label>
+    {{ with .Form.FieldErrors.title}}
+    <div class="error">{{.}}</div>
+    {{end}}
+    <input type="text" name="title" value="{{.Form.Title}}" />
+  </div>
+  <div>
+    <label>Content</label>
+    {{ with .Form.FieldErrors.content}}
+    <div class="error">{{.}}</div>
+    {{end}}
+    <textarea name="content">{{.Form.Content}}</textarea>
+  </div>
+  <div>
+    <div>Delete in:</div>
+    {{ with .Form.FieldErrors.expires}}
+    <div class="error">{{.}}</div>
+    {{end}}
+    <div>
+      <input
+        id="year"
+        type="radio"
+        name="expires"
+        value="365"
+        {{if
+        (eq
+        .Form.Expires
+        365)}}checked{{end}}
+      />
+      <label for="year">One Year</label>
+    </div>
+    <div>
+      <input
+        id="week"
+        type="radio"
+        name="expires"
+        value="7"
+        {{if
+        (eq
+        .Form.Expires
+        7)}}checked{{end}}
+      />
+      <label for="week">One Week</label>
+    </div>
+    <div>
+      <input
+        id="day"
+        type="radio"
+        name="expires"
+        value="1"
+        {{if
+        (eq
+        .Form.Expires
+        1)}}checked{{end}}
+      />
+      <label for="day">One Day</label>
+    </div>
+  </div>
+  <div>
+    <input type="submit" value="Publish snippet" />
+  </div>
+</form>
+{{end}}
