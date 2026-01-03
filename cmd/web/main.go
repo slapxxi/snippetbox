@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/slapxxi/snippetbox/internal/models"
 )
@@ -23,6 +24,7 @@ type application struct {
 	infoLogger    *log.Logger
 	errorLogger   *log.Logger
 	templateCache map[string]*template.Template
+	formDecoder   *form.Decoder
 }
 
 func main() {
@@ -48,15 +50,16 @@ func main() {
 		app.errorLogger.Fatal(err)
 	}
 
+	formDecoder := form.NewDecoder()
+
+	app.formDecoder = formDecoder
 	app.templateCache = templateCache
 	app.snippets = &models.SnippetModel{DB: db}
-
-	mux := app.routes()
 
 	srv := &http.Server{
 		Addr:     cfg.addr,
 		ErrorLog: app.errorLogger,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	app.infoLogger.Printf("starting server on %s", cfg.addr)
