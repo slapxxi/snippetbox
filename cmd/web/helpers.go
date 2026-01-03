@@ -5,13 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
-	"strings"
 	"time"
 )
-
-func isEmpty(input string) bool {
-	return strings.TrimSpace(input) == ""
-}
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
