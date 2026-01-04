@@ -6,10 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,6 +26,7 @@ type application struct {
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
+	db             *sql.DB
 }
 
 func main() {
@@ -38,32 +36,8 @@ func main() {
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "HTTP network address")
 	flag.Parse()
 
-	app := &application{
-		infoLogger:  log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime),
-		errorLogger: log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile),
-	}
-
-	db, err := openDB(cfg.dsn)
-	if err != nil {
-		app.errorLogger.Fatal(err)
-	}
-	defer db.Close()
-
-	templateCache, err := newTemplateCache()
-	if err != nil {
-		app.errorLogger.Fatal(err)
-	}
-
-	formDecoder := form.NewDecoder()
-
-	sessionManager := scs.New()
-	sessionManager.Store = mysqlstore.New(db)
-	sessionManager.Lifetime = 12 * time.Hour
-
-	app.snippets = &models.SnippetModel{DB: db}
-	app.templateCache = templateCache
-	app.formDecoder = formDecoder
-	app.sessionManager = sessionManager
+	app := NewApplication(cfg.dsn)
+	defer app.db.Close()
 
 	srv := &http.Server{
 		Addr:     cfg.addr,
@@ -72,7 +46,7 @@ func main() {
 	}
 
 	app.infoLogger.Printf("starting server on %s", cfg.addr)
-	err = srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	app.errorLogger.Fatal(err)
 }
 
