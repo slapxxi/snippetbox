@@ -1,18 +1,20 @@
 package validator
 
 import (
+	"regexp"
 	"slices"
 	"strings"
 	"unicode/utf8"
 )
 
 type Validator struct {
-	FieldErrors map[string]string
+	FieldErrors    map[string]string
+	NonFieldErrors []string
 }
 
 // Valid() returns true if the FieldErrors map doesn't contain any entries.
 func (v *Validator) Valid() bool {
-	return len(v.FieldErrors) == 0
+	return len(v.FieldErrors) == 0 && len(v.NonFieldErrors) == 0
 }
 
 // AddFieldError() adds an error message to the FieldErrors map (so long as no
@@ -26,6 +28,12 @@ func (v *Validator) AddFieldError(key, msg string) {
 	}
 }
 
+// Create an AddNonFieldError() helper for adding error messages to the new
+// NonFieldErrors slice.
+func (v *Validator) AddNonFieldError(msg string) {
+	v.NonFieldErrors = append(v.NonFieldErrors, msg)
+}
+
 // CheckField() adds an error message to the FieldErrors map only if a
 // validation check is not 'ok'.
 func (v *Validator) CheckField(ok bool, key, msg string) {
@@ -33,6 +41,8 @@ func (v *Validator) CheckField(ok bool, key, msg string) {
 		v.AddFieldError(key, msg)
 	}
 }
+
+var EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 // NotBlank() returns true if a value is not an empty string.
 func NotBlank(value string) bool {
@@ -47,4 +57,15 @@ func MaxChars(value string, n int) bool {
 // PermittedInt() returns true if a value is in a list of permitted integers.
 func PermittedInt(value int, permittedValues ...int) bool {
 	return slices.Contains(permittedValues, value)
+}
+
+// MinChars() returns true if a value contains at least n characters.
+func MinChars(value string, n int) bool {
+	return utf8.RuneCountInString(value) >= n
+}
+
+// Matches() returns true if a value matches a provided compiled regular
+// expression pattern.
+func Matches(value string, rx *regexp.Regexp) bool {
+	return rx.MatchString(value)
 }

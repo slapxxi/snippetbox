@@ -66,7 +66,12 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
-		CurrentYear: time.Now().Year(),
-		Flash:       app.sessionManager.GetString(r.Context(), "flash"),
+		CurrentYear:   time.Now().Year(),
+		Flash:         app.sessionManager.GetString(r.Context(), "flash"),
+		Authenticated: app.Authenticated(r),
 	}
+}
+
+func (app *application) Authenticated(r *http.Request) bool {
+	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
 }

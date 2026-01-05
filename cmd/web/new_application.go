@@ -37,6 +37,7 @@ func NewApplication(dsn string) *application {
 		infoLogger:     infoLogger,
 		errorLogger:    errorLogger,
 		snippets:       &models.SnippetModel{DB: db},
+		users:          &models.UserModel{DB: db},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
